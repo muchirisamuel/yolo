@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: backendserver
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    environment:
+      - DB_URL=mongodb://database/yolomy
+    volumes:
+      - /usr/app/node_modules
+      - ./backend:/usr/app
+    depends_on:
+      - mongodb
+    ports:
+      -"5000:5000"
+  
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.0
+    restart: on-failure
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    port:
+      - "27017:27017"
+    volumes:
+      - database:/data
+
+  client:
+    container_name: frontend
+    build: 
+      context: ./client
+    volumes:
+      - /usr/app/node_modules
+      - ./client:/usr/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backendserver
+
+volumes:
+  database
