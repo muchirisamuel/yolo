@@ -14,7 +14,7 @@ services:
     depends_on:
       - mongodb
     ports:
-      -"5000:5000"
+      - "5000:5000"
     networks:
       - yolonetwork
   
@@ -25,7 +25,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
-    port:
+    ports:
       - "27017:27017"
     volumes:
       - database:/data
@@ -42,12 +42,12 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - backendserver
+      - backend
     networks:
       - yolonetwork
 
 volumes:
-  database
+  database:
 
 networks:
   yolonetwork:
