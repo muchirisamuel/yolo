@@ -1,13 +1,13 @@
-FROM node:alpine3.18
+FROM node:lts-alpine
 
-WORKDIR "/usr/app"
+WORKDIR '/usr/app'
 
-COPY ./package.json ./
+COPY ./package*.json ./
 
-RUN  npm install
+RUN npm install
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 3000
 
-CMD ["npm","start"]
+CMD [ "npm","start" ]
