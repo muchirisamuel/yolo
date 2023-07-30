@@ -1,5 +1,20 @@
 ---
 - name: IP3 yolo Playbook
+  hosts: all
   become: yes
+ 
   tasks:
-    - name:
+    - name: Install Node.js and npm
+      apt:
+        name: ["nodejs", "npm"]
+        state: present
+
+    - name: Install MongoDB
+      apt:
+        name: mongodb
+        state: present
+
+    - name: Copy client files to the server
+      copy:
+        src: /home/sam/Documents/Moringa/IPs/yolo
+        dest: /home/vagrant/client/
