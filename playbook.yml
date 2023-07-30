@@ -16,5 +16,25 @@
 
     - name: Copy client files to the server
       copy:
-        src: /home/sam/Documents/Moringa/IPs/yolo
-        dest: /home/vagrant/client/
+        src: /home/sam/Documents/Moringa/IPs/yolo/client/
+        dest: /home/vagrant/client
+
+    - name: Copy client files to the server
+      copy:
+        src: /home/sam/Documents/Moringa/IPs/yolo/backend/
+        dest: /home/vagrant/backend
+
+    - name: Install npm packages for frontend
+      command: npm install
+      args:
+        chdir: /home/vagrant/client
+
+    - name: Install npm packages for backend
+      command: npm install
+      args:
+        chdir: /home/vagrant/backend
+
+    - name: Start backend server
+      command: npm start
+      args:
+        chdir: /home/vagrant/backend
