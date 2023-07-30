@@ -29,3 +29,6 @@ docker build -t dockerhubusername/containername:version -f ./dir for dockerfile 
 
 docker push to docker hub. (a) backend: docker push muchirisamuel/yolo-backend:v1.0.0
 (b) client: docker push muchirisamuel/yolo-client:v1.0.0
+
+Deployed Images
+https://hub.docker.com/u/muchirisamuel
