@@ -1,6 +1,7 @@
 IP3 YOLO PROJECT
 
 # Step 1: Playbook Definition
+
 ---
 - name: IP3 yolo Playbook
   hosts: all
@@ -20,13 +21,16 @@ The become: true attribute indicates that the playbook tasks will run with root 
 This task installs Node.js and npm on the remote machine using the "apt" package manager. The package names "nodejs" and "npm" are provided as a list, and the "state: present" ensures they are installed.
 
 # Step 3: Task to Install MongoDB
+
  - name: Install MongoDB
       apt:
         name: mongodb
         state: present
+
 This task installs MongoDB on the remote machine using the "apt" package manager. The package name "mongodb" is provided, and "state: present" ensures MongoDB is installed.
 
 # Step 4: Tasks to Copy Frontend and Backend File
+
   - name: Copy client files to the server
       copy:
         src: /home/sam/Documents/Moringa/IPs/yolo/client/
@@ -36,6 +40,7 @@ This task installs MongoDB on the remote machine using the "apt" package manager
       copy:
         src: /home/sam/Documents/Moringa/IPs/yolo/backend/
         dest: /home/vagrant/backend
+
 These tasks copy the client and backend application files from the control node (local machine) to the vagrant machine. 
 
 # Step 5: Tasks to Install npm Packages for client and backend
