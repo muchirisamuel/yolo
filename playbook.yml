@@ -1,6 +1,6 @@
 ---
 - name: IP3 yolo Playbook
-  hosts: all
+  hosts: webservers
   become: true
 
   tasks:
