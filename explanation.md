@@ -10,58 +10,106 @@ IP3 YOLO PROJECT
 In this section, I defined the Ansible playbook named "IP3 yolo Playbook." It specifies the target hosts where the tasks will be executed.
 The become: true attribute indicates that the playbook tasks will run with root privileges using "sudo."
 
-# Step 2: Task to Install Node.js and npm
+# Step 2: Task to Update apt Cache and Install Git
 
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+
+
+These tasks update the apt cache on the virtual machine to ensure it has the latest package information. Then, the playbook installs Git using the "apt" package manager so that the repository can be cloned from GitHub.
+
+# Step 3: Task to Clone the Full-stack Web App from GitHub
+
+    - name: Cloning the Full-stack Web App from GitHub
+      git:
+        repo: https://github.com/Vinge1718/yolo
+        dest: /home/vagrant
+        version: master
+
+This task clones the full-stack web application from the specified GitHub repository (yolo) to the remote virtual machine.  
+
+# Step 4: Task to Install Node.js and npm
+
     - name: Install Node.js and npm
       apt:
         name: ["nodejs", "npm"]
         state: present
 
-This task installs Node.js and npm on the remote machine using the "apt" package manager. The package names "nodejs" and "npm" are provided as a list, and the "state: present" ensures they are installed.
+This task installs Node.js and npm on the virtual machine using the "apt" package manager.
 
-# Step 3: Task to Install MongoDB
+# Step 5: Task to Install MongoDB and Allow Incoming Traffic on Ports 5000 and 3000
 
- - name: Install MongoDB
+    - name: Install MongoDB
       apt:
         name: mongodb
         state: present
 
-This task installs MongoDB on the remote machine using the "apt" package manager. The package name "mongodb" is provided, and "state: present" ensures MongoDB is installed.
+    - name: Allow incoming traffic on port 5000 (frontend)
+      ufw:
+        rule: allow
+        port: 5000
 
-# Step 4: Tasks to Copy Frontend and Backend File
+    - name: Allow incoming traffic on port 3000 (backend)
+      ufw:
+        rule: allow
+        port: 3000
 
-  - name: Copy client files to the server
-      copy:
-        src: /home/sam/Documents/Moringa/IPs/yolo/client/
-        dest: /home/vagrant/client
+    - name: Enable ufw firewall
+      ufw:
+        state: enabled
 
-    - name: Copy client files to the server
-      copy:
-        src: /home/sam/Documents/Moringa/IPs/yolo/backend/
-        dest: /home/vagrant/backend
+These tasks install MongoDB on the virtual machine using the "apt" package manager. Additionally, they allow incoming traffic on ports 5000 and 3000 using the ufw module, which manages the firewall on Ubuntu. The last task enables the firewall.
 
-These tasks copy the client and backend application files from the control node (local machine) to the vagrant machine. 
+# Step 6: Task to Start MongoDB Service
 
-# Step 5: Tasks to Install npm Packages for client and backend
+    - name: Start MongoDB service
+      service:
+        name: mongod
+        state: started
 
-    - name: Install npm packages for client
+This task starts the MongoDB service on the virtual machine so that your web application can interact with the database
+
+# Step 7: Tasks to Install npm Dependencies and Start Frontend and Backend Servers
+    - name: Install npm dependencies for frontend
       command: npm install
       args:
-        chdir: /home/vagrant/client
+        chdir: /home/vagrant/yolo/client
 
-    - name: Install npm packages for backend
+    - name: Install npm dependencies for backend
       command: npm install
       args:
-        chdir: /home/vagrant/backend
+        chdir: /home/vagrant/yolo/backend
 
-These tasks install npm packages for the frontend and backend applications on the remote machine. The "npm install" command is executed within the specified directories using the "chdir" parameter.
-
-# Step 6: Task to Start Backend Server
+    - name: Start frontend server
+      command: npm start
+      args:
+        chdir: /home/vagrant/yolo/client
 
     - name: Start backend server
       command: npm start
       args:
-        chdir: /home/vagrant/backend
+        chdir: /home/vagrant/yolo/backend
 
-This task starts the backend server on the remote machine using the "npm start" command. The "chdir" parameter ensures that the command is executed within the backend application directory.
+# Step 8: Adds a mongodb user
+
+    - name: Add MongoDB user
+      mongo_user:
+        login_user: admin
+        login_password: password
+        user: bob
+        password: 12345
+        roles: readWrite
+
+    - name: Create MongoDB database
+      mongo_db:
+        login_user: bob
+        login_password: 12345
+        name: appdb
+
