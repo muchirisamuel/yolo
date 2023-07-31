@@ -1,7 +1,7 @@
 ---
 - name: IP3 yolo Playbook
   hosts: all
-  become: yes
+  become: true
  
   tasks:
     - name: Install Node.js and npm
