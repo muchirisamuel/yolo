@@ -2,8 +2,23 @@
 - name: IP3 yolo Playbook
   hosts: all
   become: true
- 
+
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+
+    - name: Cloning the Full-stack Web App from GitHub
+      git:
+        repo: https://github.com/Vinge1718/yolo
+        dest: /home/vagrant
+        version: master
+
     - name: Install Node.js and npm
       apt:
         name: ["nodejs", "npm"]
@@ -14,27 +29,56 @@
         name: mongodb
         state: present
 
-    - name: Copy client files to the server
-      copy:
-        src: /home/sam/Documents/Moringa/IPs/yolo/client/
-        dest: /home/vagrant/client
+    - name: Allow incoming traffic on port 5000 (frontend)
+      ufw:
+        rule: allow
+        port: 5000
 
-    - name: Copy client files to the server
-      copy:
-        src: /home/sam/Documents/Moringa/IPs/yolo/backend/
-        dest: /home/vagrant/backend
+    - name: Allow incoming traffic on port 3000 (backend)
+      ufw:
+        rule: allow
+        port: 3000
 
-    - name: Install npm packages for frontend
+    - name: Enable ufw firewall
+      ufw:
+        state: enabled
+
+    - name: Start MongoDB service
+      service:
+        name: mongod
+        state: started
+
+    - name: Install npm dependencies for frontend
       command: npm install
       args:
-        chdir: /home/vagrant/client
+        chdir: /home/vagrant/yolo/client
 
-    - name: Install npm packages for backend
+    - name: Install npm dependencies for backend
       command: npm install
       args:
-        chdir: /home/vagrant/backend
+        chdir: /home/vagrant/yolo/backend
+
+    - name: Start frontend server
+      command: npm start
+      args:
+        chdir: /home/vagrant/yolo/client
 
     - name: Start backend server
       command: npm start
       args:
-        chdir: /home/vagrant/backend
+        chdir: /home/vagrant/yolo/backend
+
+    - name: Add MongoDB user
+      mongo_user:
+        login_user: admin
+        login_password: password
+        user: bob
+        password: 12345
+        roles: readWrite
+
+    - name: Create MongoDB database
+      mongo_db:
+        login_user: bob
+        login_password: 12345
+        name: appdb
+
