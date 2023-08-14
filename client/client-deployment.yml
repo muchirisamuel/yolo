@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: client
-          image: bixoloo/client:v1.0.2
+          image: muchirisamuel/client:v1.0.2
           ports:
             - containerPort: 3000
